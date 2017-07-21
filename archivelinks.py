@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Listens to a Twitter timeline and sends tweeted URLs to the Internet Archive.
 
@@ -61,11 +61,15 @@ def grab_urls(tweet):
     return url_list
 
 def send_to_archive(link):
-    print("Sending {} to the Internet Archive.".format(link))
+    print("submitting: " + link)
     if link:
         try:
             requests.get("https://web.archive.org/save/{}".format(link),
                     headers = {'user-agent':'@{} twitter bot'.format(SCREEN_NAME)})
+            print("archive.org submitted: " + link)
+        except:
+            print("ERROR archive.org on: " + link)
+        try:
             requests.post(
                 "https://archive.fo/submit/",
                 data = urllib.urlencode({"submitid":"twitter-{}".format(time.time()), "url":link}),
@@ -76,10 +80,9 @@ def send_to_archive(link):
                            'cache-control': 'max-age=0',
                            'dnt': '1'}
             )
-            print("submitted: " + link)
+            print("archive.fo submitted: " + link)
         except:
-            print("failure on: " + link)
-            pass
+            print("ERROR archive.fo on: " + link)
 
 def main():
     streamer = get_stream_instance()
