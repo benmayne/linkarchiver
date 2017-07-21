@@ -42,7 +42,7 @@ def check_tweet(data):
                         archive_link, data['id_str'], 
                         data['user']['screen_name'])
     elif 'event' in data:
-        print("Some kind of event!")
+        print("Some kind of event! {}".format(data['event']))
         if data['event'] == 'follow' and data['source']['screen_name'] != SCREEN_NAME:
             print("I'm gonna follow {}.".format(data['source']['screen_name']))
             twitter_follow(data['source']['screen_name'])
@@ -72,7 +72,7 @@ def tweet_reply(archive_link, tweet_id, screen_name):
         pass
 
 def grab_urls(tweet):
-    url_list = []
+    url_list = ["https://twitter.com/{}/status/{}".format(tweet["user"]["screen_name"], tweet["id"])]
     for url in tweet['entities']['urls']:
         if url['expanded_url']:
             url_list.append(url['expanded_url'])
