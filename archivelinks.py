@@ -6,7 +6,7 @@ import os
 import requests
 import yaml
 from twython import Twython, TwythonStreamer, TwythonError
-import thread
+import _thread as thread
 
 fullpath = os.path.dirname(os.path.realpath(__file__))
 CONFIGFILE = os.path.join(fullpath, "config.yaml")
