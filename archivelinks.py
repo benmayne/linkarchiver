@@ -7,7 +7,8 @@ import requests
 import yaml
 import urllib
 from twython import Twython, TwythonStreamer, TwythonError
-import _thread as thread
+import thread as thread
+import time
 
 fullpath = os.path.dirname(os.path.realpath(__file__))
 CONFIGFILE = os.path.join(fullpath, "config.yaml")
@@ -60,7 +61,7 @@ def send_to_archive(link):
                     headers = {'user-agent':'@{} twitter bot'.format(SCREEN_NAME)})
             requests.post(
                 "https://archive.fo/submit/",
-                data = urllib.urlencode({"submitid":"sux", "url":link}),
+                data = urllib.urlencode({"submitid":"twitter-{}".format(time.time()), "url":link}),
                 headers = {'user-agent':'@{} twitter bot'.format(SCREEN_NAME),
                            'origin': 'https://archive.fo',
                            'content-type': 'application/x-www-form-urlencoded',
