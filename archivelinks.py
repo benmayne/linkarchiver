@@ -5,6 +5,7 @@
 import os
 import requests
 import yaml
+import urllib
 from twython import Twython, TwythonStreamer, TwythonError
 import thread
 
@@ -55,12 +56,20 @@ def send_to_archive(link):
     print("Sending {} to the Internet Archive.".format(link))
     if link:
         try:
-            res = requests.get("https://web.archive.org/save/{}".format(link),
+            requests.get("https://web.archive.org/save/{}".format(link),
                     headers = {'user-agent':'@{} twitter bot'.format(SCREEN_NAME)})
-            with open(os.path.join(fullpath,"log.txt"),"a") as f:
-                f.write(link + "\n")
-            return "https://web.archive.org" + res.headers['Content-Location']
+            requests.post(
+                "https://archive.fo/submit/",
+                data = urllib.urlencode({"submitid":"sux", "url":link}),
+                headers = {'user-agent':'@{} twitter bot'.format(SCREEN_NAME),
+                           'origin': 'https://archive.fo',
+                           'content-type': 'application/x-www-form-urlencoded',
+                           'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                           'cache-control': 'max-age=0',
+                           'dnt': '1'}
+            )
         except:
+            print("failure on: " + link)
             pass
 
 def main():
