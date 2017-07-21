@@ -33,43 +33,15 @@ def get_twitter_instance():
 def check_tweet(data):
     if 'entities' in data:
         url_list = grab_urls(data)
-        screen_names = [user['screen_name'] for user in 
-                data['entities']['user_mentions']]
         for url in url_list:
-            archive_link = send_to_archive(url)
-            if SCREEN_NAME in screen_names:
-                tweet_reply(
-                        archive_link, data['id_str'], 
-                        data['user']['screen_name'])
+            send_to_archive(url)
     elif 'event' in data:
         print("Some kind of event! {}".format(data['event']))
-        if data['event'] == 'follow' and data['source']['screen_name'] != SCREEN_NAME:
-            print("I'm gonna follow {}.".format(data['source']['screen_name']))
-            twitter_follow(data['source']['screen_name'])
     else:
-        print(data)
+        print("other: " + str(data))
 
 def log_failure(status_code, data):
     print("Something's gone terribly wrong: " + str(status_code) + " " + str(data))
-
-def twitter_follow(screen_name):
-    twitter = get_twitter_instance()
-    try:
-        twitter.create_friendship(screen_name = screen_name)
-    except TwythonError as err:
-        print("Had this error, bud: " + str(err))
-
-def tweet_reply(archive_link, tweet_id, screen_name):
-    twitter = get_twitter_instance()
-    if archive_link:
-        message = "Here's your archived link: " + archive_link
-    else:
-        message = "Sorry, something went wrong :("
-    try:
-        twitter.update_status(status = "@" + screen_name + " " + message,
-                in_reply_to_status_id = tweet_id)
-    except:
-        pass
 
 def grab_urls(tweet):
     url_list = ["https://twitter.com/{}/status/{}".format(tweet["user"]["screen_name"], tweet["id"])]
