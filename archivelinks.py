@@ -7,8 +7,11 @@ import requests
 import yaml
 import urllib
 from twython import Twython, TwythonStreamer, TwythonError
-import thread as thread
 import time
+import thread as thread
+import logging
+
+logging.basicConfig(filename='log.log',level=logging.WARN)
 
 fullpath = os.path.dirname(os.path.realpath(__file__))
 CONFIGFILE = os.path.join(fullpath, "config.yaml")
@@ -34,14 +37,18 @@ def get_twitter_instance():
     return Twython(app_key, app_secret, oauth_token, oauth_token_secret)
 
 def check_tweet(data):
-    if 'entities' in data:
-        url_list = grab_urls(data)
-        for url in url_list:
-            thread.start_new_thread(send_to_archive, (url, ))
-    elif 'event' in data:
-        print("Some kind of event! {}".format(data['event']))
-    else:
-        print("other: " + str(data))
+    try:
+        if 'entities' in data:
+            url_list = grab_urls(data)
+            for url in url_list:
+                thread.start_new_thread(send_to_archive, (url, ))
+        elif 'event' in data:
+            print("Some kind of event! {}".format(data['event']))
+        else:
+            print("other: " + str(data))
+    except Exception:
+        logging.warn(str(data))
+        print(Exception)
 
 def log_failure(status_code, data):
     print("Something's gone terribly wrong: " + str(status_code) + " " + str(data))
@@ -69,6 +76,7 @@ def send_to_archive(link):
                            'cache-control': 'max-age=0',
                            'dnt': '1'}
             )
+            print("submitted: " + link)
         except:
             print("failure on: " + link)
             pass
