@@ -54,7 +54,8 @@ def log_failure(status_code, data):
     print("Something's gone terribly wrong: " + str(status_code) + " " + str(data))
 
 def grab_urls(tweet):
-    url_list = ["https://twitter.com/{}/status/{}".format(tweet["user"]["screen_name"], tweet["id"])]
+    url_list = ["https://twitter.com/{}/status/{}".format(tweet["user"]["screen_name"], tweet["id"]),
+                "https://twitter.com/i/web/status/{}".format(tweet["id"])]
     for url in tweet['entities']['urls']:
         if url['expanded_url']:
             url_list.append(url['expanded_url'])
