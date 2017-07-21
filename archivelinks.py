@@ -6,6 +6,7 @@ import os
 import requests
 import yaml
 from twython import Twython, TwythonStreamer, TwythonError
+import thread
 
 fullpath = os.path.dirname(os.path.realpath(__file__))
 CONFIGFILE = os.path.join(fullpath, "config.yaml")
@@ -34,7 +35,7 @@ def check_tweet(data):
     if 'entities' in data:
         url_list = grab_urls(data)
         for url in url_list:
-            send_to_archive(url)
+            thread.start_new_thread(send_to_archive, (url, ))
     elif 'event' in data:
         print("Some kind of event! {}".format(data['event']))
     else:
